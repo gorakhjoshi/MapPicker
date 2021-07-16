@@ -27,6 +27,7 @@ class Workout {
   date = new Date();
   id = (Date.now() + '').slice(-10);
 
+
   constructor(coords, distance, duration) {
     // this.date = ...
     // this.id = ...
@@ -42,6 +43,8 @@ class Workout {
       months[this.date.getMonth()]
       } ${this.date.getDate()}`;
   }
+
+ 
 
 }
 
@@ -89,6 +92,9 @@ class App {
 
   constructor() {
     this._getPosition();
+
+    this._getLocalStorage();
+
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
@@ -121,6 +127,11 @@ class App {
     }).addTo(this.#map);
 
     this.#map.on('click', this._showForm.bind(this));
+
+
+    this.#workouts.forEach(work => {
+      this._renderWorkoutMarker(work);
+    })
   }
 
   _showForm(mapE) {
@@ -195,6 +206,8 @@ class App {
     this._renderWorkout(workout);
 
     this._hideForm();
+
+    this._setLocalStorage();
 
   }
 
@@ -283,6 +296,24 @@ class App {
         duration: 1,
       },
     });
+    
+
+  }
+
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+    console.log(data)
+
+    if(!data) return;
+
+    this.#workouts = data;
+    this.#workouts.forEach(work => {
+      this._renderWorkout(work);
+    })
   }
 }
 
